@@ -17,7 +17,18 @@
  */
 kt_status_t kt_ringbuf_init(kt_ringbuf_t* rb, kt_uint8_t* buffer, kt_uint32_t size)
 {
-    if (rb == NULL || buffer == NULL || size == 0)
+    /* 参数检查 */
+    if (rb == NULL)
+    {
+        return KT_ERR_NULL_PTR;
+    }
+    
+    if (buffer == NULL)
+    {
+        return KT_ERR_NULL_PTR;
+    }
+    
+    if (size == 0)
     {
         return KT_ERR_INVALID_PARAM;
     }
@@ -47,7 +58,71 @@ void kt_ringbuf_reset(kt_ringbuf_t* rb)
 }
 
 /**
- * @brief 写入数据
+ * @brief 写入单个字节
+ */
+kt_status_t kt_ringbuf_write_byte(kt_ringbuf_t* rb, kt_uint8_t byte)
+{
+    if (rb == NULL)
+    {
+        return KT_ERR_NULL_PTR;
+    }
+    
+    if (rb->full)
+    {
+        return KT_ERR_FULL;
+    }
+    
+    rb->buffer[rb->write_pos] = byte;
+    rb->write_pos++;
+    
+    if (rb->write_pos >= rb->size)
+    {
+        rb->write_pos = 0;
+    }
+    
+    if (rb->write_pos == rb->read_pos)
+    {
+        rb->full = KT_TRUE;
+    }
+    
+    return KT_OK;
+}
+
+/**
+ * @brief 读取单个字节
+ */
+kt_status_t kt_ringbuf_read_byte(kt_ringbuf_t* rb, kt_uint8_t* byte)
+{
+    if (rb == NULL)
+    {
+        return KT_ERR_NULL_PTR;
+    }
+    
+    if (byte == NULL)
+    {
+        return KT_ERR_NULL_PTR;
+    }
+    
+    if (rb->read_pos == rb->write_pos && !rb->full)
+    {
+        return KT_ERR_EMPTY;
+    }
+    
+    *byte = rb->buffer[rb->read_pos];
+    rb->read_pos++;
+    
+    if (rb->read_pos >= rb->size)
+    {
+        rb->read_pos = 0;
+    }
+    
+    rb->full = KT_FALSE;
+    
+    return KT_OK;
+}
+
+/**
+ * @brief 批量写入数据
  */
 kt_uint32_t kt_ringbuf_write(kt_ringbuf_t* rb, const kt_uint8_t* data, kt_uint32_t length)
 {
@@ -61,26 +136,13 @@ kt_uint32_t kt_ringbuf_write(kt_ringbuf_t* rb, const kt_uint8_t* data, kt_uint32
     
     for (i = 0; i < length; i++)
     {
-        if (rb->full)
+        if (kt_ringbuf_write_byte(rb, data[i]) == KT_OK)
         {
-            /* 缓冲区满，停止写入 */
-            break;
+            written++;
         }
-        
-        rb->buffer[rb->write_pos] = data[i];
-        rb->write_pos++;
-        
-        if (rb->write_pos >= rb->size)
+        else
         {
-            rb->write_pos = 0;
-        }
-        
-        written++;
-        
-        /* 检查是否满了 */
-        if (rb->write_pos == rb->read_pos)
-        {
-            rb->full = KT_TRUE;
+            break;  /* 缓冲区满，停止写入 */
         }
     }
     
@@ -88,7 +150,7 @@ kt_uint32_t kt_ringbuf_write(kt_ringbuf_t* rb, const kt_uint8_t* data, kt_uint32
 }
 
 /**
- * @brief 读取数据
+ * @brief 批量读取数据
  */
 kt_uint32_t kt_ringbuf_read(kt_ringbuf_t* rb, kt_uint8_t* data, kt_uint32_t length)
 {
@@ -102,24 +164,14 @@ kt_uint32_t kt_ringbuf_read(kt_ringbuf_t* rb, kt_uint8_t* data, kt_uint32_t leng
     
     for (i = 0; i < length; i++)
     {
-        if (rb->read_pos == rb->write_pos && !rb->full)
+        if (kt_ringbuf_read_byte(rb, &data[i]) == KT_OK)
         {
-            /* 缓冲区空，停止读取 */
-            break;
+            read++;
         }
-        
-        data[i] = rb->buffer[rb->read_pos];
-        rb->read_pos++;
-        
-        if (rb->read_pos >= rb->size)
+        else
         {
-            rb->read_pos = 0;
+            break;  /* 缓冲区空，停止读取 */
         }
-        
-        read++;
-        
-        /* 读取后不再满 */
-        rb->full = KT_FALSE;
     }
     
     return read;

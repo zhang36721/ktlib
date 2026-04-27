@@ -57,6 +57,22 @@ kt_status_t kt_ringbuf_init(kt_ringbuf_t* rb, kt_uint8_t* buffer, kt_uint32_t si
 void kt_ringbuf_reset(kt_ringbuf_t* rb);
 
 /**
+ * @brief 写入单个字节
+ * @param rb 环形缓冲区指针
+ * @param byte 要写入的字节
+ * @return KT_OK 成功，其他 失败
+ */
+kt_status_t kt_ringbuf_write_byte(kt_ringbuf_t* rb, kt_uint8_t byte);
+
+/**
+ * @brief 读取单个字节
+ * @param rb 环形缓冲区指针
+ * @param byte 读取到的字节
+ * @return KT_OK 成功，其他 失败
+ */
+kt_status_t kt_ringbuf_read_byte(kt_ringbuf_t* rb, kt_uint8_t* byte);
+
+/**
  * @brief 写入数据
  * @param rb 环形缓冲区指针
  * @param data 数据指针

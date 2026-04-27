@@ -13,11 +13,43 @@ ktlib 通过 `kt_port` 适配层实现跨平台兼容。移植的核心工作是
 | GPIO | `kt_port_gpio_init()` | GPIO初始化 |
 | | `kt_port_gpio_write()` | GPIO写操作 |
 | | `kt_port_gpio_read()` | GPIO读操作 |
+| | `kt_port_gpio_toggle()` | GPIO切换操作 |
 | UART | `kt_port_uart_init()` | UART初始化 |
-| | `kt_port_uart_send()` | UART发送数据 |
-| | `kt_port_uart_receive()` | UART接收数据 |
+| | `kt_port_uart_send()` | UART发送数据（阻塞） |
+| | `kt_port_uart_receive()` | UART接收数据（阻塞） |
+| | `kt_port_uart_send_nb()` | UART发送数据（非阻塞） |
+| | `kt_port_uart_receive_nb()` | UART接收数据（非阻塞） |
 | Time | `kt_port_delay_ms()` | 毫秒级延时 |
-| | `kt_port_get_tick()` | 获取系统时钟节拍 |
+| | `kt_port_delay_us()` | 微秒级延时 |
+| | `kt_port_get_tick()` | 获取系统时钟节拍（毫秒） |
+| | `kt_port_get_tick_freq()` | 获取系统时钟频率 |
+
+### 1.2 UART 接口详细说明
+
+```c
+/**
+ * @brief 初始化UART
+ * @param uart_handle UART句柄（平台相关）
+ * @param baudrate 波特率，如 115200
+ * @param data_bits 数据位，取值：
+ *   - KT_UART_DATA_5 (5位)
+ *   - KT_UART_DATA_6 (6位)
+ *   - KT_UART_DATA_7 (7位)
+ *   - KT_UART_DATA_8 (8位，最常用)
+ * @param stop_bits 停止位，取值：
+ *   - KT_UART_STOP_1 (1位停止位，最常用)
+ *   - KT_UART_STOP_2 (2位停止位)
+ * @param parity 校验位，取值：
+ *   - KT_UART_PARITY_NONE (无校验，最常用)
+ *   - KT_UART_PARITY_EVEN (偶校验)
+ *   - KT_UART_PARITY_ODD (奇校验)
+ * @return KT_OK 成功，其他 失败
+ */
+kt_status_t kt_port_uart_init(void* uart_handle, kt_uint32_t baudrate,
+                              kt_uart_data_t data_bits, 
+                              kt_uart_stop_t stop_bits,
+                              kt_uart_parity_t parity);
+```
 
 ## 2. STM32 HAL 平台移植
 

@@ -204,9 +204,12 @@ typedef void (*kt_callback2_t)(void* arg1, void* arg2);
     ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 #endif
 
-/** 交换两个值 */
+/** 
+ * @brief 交换两个值
+ * @note 使用保守实现，避免使用typeof以兼容C89/C90
+ */
 #ifndef KT_SWAP
-#define KT_SWAP(a, b)  do { typeof(a) _tmp = (a); (a) = (b); (b) = _tmp; } while(0)
+#define KT_SWAP(type, a, b)  do { type _tmp = (a); (a) = (b); (b) = _tmp; } while(0)
 #endif
 
 #ifdef __cplusplus
