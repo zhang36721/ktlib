@@ -493,10 +493,19 @@ uint8_t kt_port_gpio_read(void* port, uint16_t pin)
 
 /**
  * @brief 初始化UART（模拟）
+ * @param uart_handle UART句柄
+ * @param baudrate 波特率
+ * @param data_bits 数据位（KT_UART_DATA_8 等）
+ * @param stop_bits 停止位（KT_UART_STOP_1 等）
+ * @param parity 校验位（KT_UART_PARITY_NONE 等）
  */
-kt_status_t kt_port_uart_init(void* uart_handle, uint32_t baudrate)
+kt_status_t kt_port_uart_init(void* uart_handle, uint32_t baudrate,
+                              kt_uart_data_t data_bits, 
+                              kt_uart_stop_t stop_bits,
+                              kt_uart_parity_t parity)
 {
-    printf("[MOCK] UART init: handle=%p, baudrate=%lu\n", uart_handle, baudrate);
+    printf("[MOCK] UART init: handle=%p, baudrate=%lu, data=%d, stop=%d, parity=%d\n", 
+           uart_handle, baudrate, data_bits, stop_bits, parity);
     return KT_OK;
 }
 

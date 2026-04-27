@@ -92,9 +92,9 @@ ktlib/
 ## 后续计划
 
 ### Phase 2 - 核心组件实现
-- [ ] 实现 `kt_ringbuf` 环形缓冲区
-- [ ] 实现 `kt_soft_timer` 软件定时器
+- [x] 实现 `kt_ringbuf` 环形缓冲区 ✅
 - [ ] 实现 `kt_crc` CRC校验
+- [ ] 实现 `kt_soft_timer` 软件定时器
 
 ### Phase 3 - 基础驱动实现
 - [ ] 实现 `kt_led` LED驱动
